@@ -1,5 +1,7 @@
 package com.example.ecom.service;
 
+import com.example.ecom.exceptions.APIException;
+import com.example.ecom.exceptions.ResourceNotFoundException;
 import com.example.ecom.model.Category;
 import com.example.ecom.repository.CategoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,26 +23,34 @@ public class CategoryServiceImp implements CategoryService{
 
     @Override
     public List<Category> getAllCategories() {
-        return categoryRepository.findAll();
+        List<Category> categories = categoryRepository.findAll();
+        if(categories.isEmpty()){
+            throw new APIException("No Data Found");
+        }
+        return categories;
     }
 
     @Override
     public void addCategory(Category category) {
+        Category savedCategory = categoryRepository.findByCategoryName(category.getCategoryName());
+        if(savedCategory!=null){
+            throw new APIException("Category with name "+ category.getCategoryName() + " already exists !!");
+        }
         categoryRepository.save(category);
     }
 
     @Override
     public String deleteCategory(Long categoryId) {
         Category category = categoryRepository.findById(categoryId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"Resource not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Category","categoryID", categoryId));
         categoryRepository.delete(category);
-        return "Deleted Successfully";
+        return "Category with CategoryId: " + categoryId + " deleted successfully !!";
     }
 
     @Override
     public Category updateCategory(Category category, Long categoryId) {
         Category savedCategory = categoryRepository.findById(categoryId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"Category not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Category","categoryID", categoryId));
         category.setCategoryID(categoryId);
         savedCategory = categoryRepository.save(category);
         return savedCategory;
