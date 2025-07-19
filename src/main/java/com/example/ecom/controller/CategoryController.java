@@ -1,7 +1,6 @@
 package com.example.ecom.controller;
 
 import com.example.ecom.config.AppConstants;
-import com.example.ecom.model.Category;
 import com.example.ecom.payload.CategoryDTO;
 import com.example.ecom.payload.CategoryResponse;
 import com.example.ecom.service.CategoryService;
@@ -10,10 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.HttpStatusCodeException;
-import org.springframework.web.server.ResponseStatusException;
 
-import java.util.List;
 
 @RestController
 @RequestMapping("/api")
