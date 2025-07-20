@@ -1,13 +1,18 @@
 package com.example.ecom.security.jwt;
 
+import com.example.ecom.security.service.UserDetailsImp;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseCookie;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
+import org.springframework.web.util.WebUtils;
 
 import java.security.Key;
 import java.util.Date;
@@ -17,6 +22,9 @@ import java.util.function.Function;
 
 @Component
 public class JwtUtils {
+
+    @Value("${spring.ecom.app.jwtCookieName}")
+    private String jwtCookie;
 
     private static final Logger logger = LoggerFactory.getLogger(JwtUtils.class);
 
@@ -33,6 +41,25 @@ public class JwtUtils {
 //        }
 //        return null;
 //    }
+
+    public String getJwtFromCookies(HttpServletRequest request) {
+        Cookie cookie = WebUtils.getCookie(request, jwtCookie);
+        if (cookie != null) {
+            System.out.println("COOKIE: " + cookie.getValue());
+            return cookie.getValue();
+        } else {
+            return null;
+        }
+    }
+
+    public ResponseCookie generateJwtCookie(UserDetailsImp userPrincipal) {
+        String jwt = generateToken(userPrincipal.getUsername());
+        ResponseCookie cookie = ResponseCookie.from(jwtCookie, jwt).path("/api").maxAge(24 * 60 * 60)
+                .httpOnly(false)
+                .build();
+        return cookie;
+    }
+
     public String generateToken(String username) {
 
         Map<String, Object> claims = new HashMap<>();

@@ -34,12 +34,11 @@ public class AuthTokenFilter extends OncePerRequestFilter {
 
         logger.debug("AuthTokenFilter called for URI: {}", request.getRequestURI());
 
-        String authHeader = request.getHeader("Authorization");
-        String token = null;
-        String userName = null;
+//        String authHeader = request.getHeader("Authorization");
+        String token = jwtUtils.getJwtFromCookies(request);
+        String userName=null;
 
-        if(authHeader != null && authHeader.startsWith("Bearer ")){
-            token = authHeader.substring(7);
+        if(token != null){
             userName = jwtUtils.extractUserName(token);
         }
 
