@@ -60,6 +60,13 @@ public class JwtUtils {
         return cookie;
     }
 
+    public ResponseCookie getCleanJwtCookie() {
+        ResponseCookie cookie = ResponseCookie.from(jwtCookie, "").path("/api")
+                .maxAge(0)
+                .build();
+        return cookie;
+    }
+
     public String generateToken(String username) {
 
         Map<String, Object> claims = new HashMap<>();
@@ -137,4 +144,5 @@ public String extractUserName(String token) {
     private Date extractExpiration(String token) {
         return extractClaim(token, Claims::getExpiration);
     }
+
 }
